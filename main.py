@@ -18,8 +18,18 @@ print(data.isnull().sum()) # will show the number of null values in each column
 def prepocess_data(df):
     df.drop(columns=["PassengerId", "Name", "Ticket", "Cabin"], inplace=True)
 
+    # Fill missing values for Fare
     df["Fare"].fillna(df["Fare"].mean(), inplace=True)
 
     # Convert Gender to binary
     df["Sex"] = df["Sex"].map({"male":1, "female":0})
 
+    # Feature Engineering
+    df["FamilySize"] = df["SibSp"] + df["Parch"]
+    df["IsAlone"] = np.where(df["FamilySize"] == 0, 1, 0) # 1 if alone, 0 if not
+    df["FareBin"] = pd.qcut(df["Fare"], 4, labels=False) # Creating bins for Fare and Age to catogorize them, creating more columns but wont show in the dataset
+    df["AgeBin"] = pd.qcut(df["Age"], bins=[0,12,20,40,60, np.inf], labels=False)
+
+    return df
+
+# Fill in missing ages
