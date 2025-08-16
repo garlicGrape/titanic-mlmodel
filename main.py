@@ -21,5 +21,5 @@ def prepocess_data(df):
     df["Fare"].fillna(df["Fare"].mean(), inplace=True)
 
     # Convert Gender to binary
-    
+    df["Sex"] = df["Sex"].map({"male":1, "female":0})
 
