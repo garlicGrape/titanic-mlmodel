@@ -21,6 +21,8 @@ def prepocess_data(df):
     # Fill missing values for Fare
     df["Fare"].fillna(df["Fare"].mean(), inplace=True)
 
+    fill_missing_ages(df)
+
     # Convert Gender to binary
     df["Sex"] = df["Sex"].map({"male":1, "female":0})
 
@@ -33,3 +35,10 @@ def prepocess_data(df):
     return df
 
 # Fill in missing ages
+def fill_missing_ages(df):
+    age_fill_map = {} # dictionary for now
+    for pclass in df["Pclass"].unique():
+        if pclass not in age_fill_map:
+            age_fill_map[pclass] = df[df["Pclass"] == pclass]["Age"].mean()
+    df["Age"] = df.apply(lambda row: age_fill_map[row["Pclass"]] if pd.isnull(row["Age"]) else row["Age"],
+    axis=1)  # Fill missing ages with class-specific means, keep existing ages if present, axis=1 means apply to each row and look at the Pclass column and Age column
