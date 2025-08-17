@@ -83,3 +83,14 @@ accuracy, matrix = evaluate_model(best_model, X_test, y_test)
 print(f"Accuracy: {accuracy*100:.2f}%")
 print(f"Confusion Matrix:")
 print(matrix)
+
+# Plot
+def plot_model(matrix):
+    plt.figure(figsize=(10,7))
+    sns.heatmap(matrix, annot=True, fmt="d", xticklabels=["Survived", "Not Survived"], yticklabels=["Not Survived", "Survived"])
+    plt.title("Confusion Matrix")
+    plt.xlabel("Predicted Value")
+    plt.ylabel("True Values")
+    plt.show()
+
+plot_model(matrix)
