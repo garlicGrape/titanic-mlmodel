@@ -42,3 +42,18 @@ def fill_missing_ages(df):
             age_fill_map[pclass] = df[df["Pclass"] == pclass]["Age"].mean()
     df["Age"] = df.apply(lambda row: age_fill_map[row["Pclass"]] if pd.isnull(row["Age"]) else row["Age"],
     axis=1)  # Fill missing ages with class-specific means, keep existing ages if present, axis=1 means apply to each row and look at the Pclass column and Age column
+
+data = prepocess_data(data)
+
+# Create Features / Target Variables (Make Flashcards)
+X = data.drop(columns=["Survived"]) # So we cannot see the Survived column in the X variable
+y = data["Survived"]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.25, random_state=42) # X is the front of the flashcard and y is the back of the flashcard 
+
+# ML Preprocessing
+scaler = MinMaxScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+
+# Hyperparameter Tuning
