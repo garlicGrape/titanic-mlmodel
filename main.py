@@ -18,19 +18,19 @@ print(data.isnull().sum()) # will show the number of null values in each column
 def prepocess_data(df):
     df.drop(columns=["PassengerId", "Name", "Ticket", "Cabin"], inplace=True)
 
-    # Fill missing values for Fare
-    df["Fare"].fillna(df["Fare"].mean(), inplace=True)
-
+    df["Embarked"].fillna("S", inplace=True)
+    df.drop(columns=["Embarked"], inplace=True)
+    
     fill_missing_ages(df)
 
     # Convert Gender to binary
     df["Sex"] = df["Sex"].map({"male":1, "female":0})
-
+ 
     # Feature Engineering
     df["FamilySize"] = df["SibSp"] + df["Parch"]
     df["IsAlone"] = np.where(df["FamilySize"] == 0, 1, 0) # 1 if alone, 0 if not
     df["FareBin"] = pd.qcut(df["Fare"], 4, labels=False) # Creating bins for Fare and Age to catogorize them, creating more columns but wont show in the dataset
-    df["AgeBin"] = pd.qcut(df["Age"], bins=[0,12,20,40,60, np.inf], labels=False)
+    df["AgeBin"] = pd.cut(df["Age"], bins=[0,12,20,40,60, np.inf], labels=False)
 
     return df
 
@@ -56,4 +56,30 @@ scaler = MinMaxScaler()
 X_train = scaler.fit_transform(X_train)
 X_test = scaler.transform(X_test)
 
-# Hyperparameter Tuning
+# Hyperparameter Tuning - KNN Model
+def tune_model(X_train, y_train):
+    param_grid = {
+       "n_neighbors":range(1,21),
+       "metric": ["euclidean", "manhattan", "minkowski"],
+       "weights": ["uniform", "distance"]
+    }
+
+    model = KNeighborsClassifier()
+    grid_search = GridSearchCV(model, param_grid, cv=5, n_jobs=-1)
+    grid_search.fit(X_train, y_train)
+    return grid_search.best_estimator_
+
+best_model = tune_model(X_train, y_train) # This will return the best model based on the grid search
+
+# Predictions and evaluate
+def evaluate_model(model, X_test, y_test):
+    prediction = model.predict(X_test)
+    accuracy = accuracy_score(y_test, prediction)
+    matrix = confusion_matrix(y_test, prediction)
+    return accuracy, matrix
+
+accuracy, matrix = evaluate_model(best_model, X_test, y_test)
+
+print(f"Accuracy: {accuracy*100:.2f}%")
+print(f"Confusion Matrix:")
+print(matrix)
