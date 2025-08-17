@@ -87,7 +87,7 @@ print(matrix)
 # Plot
 def plot_model(matrix):
     plt.figure(figsize=(10,7))
-    sns.heatmap(matrix, annot=True, fmt="d", xticklabels=["Survived", "Not Survived"], yticklabels=["Not Survived", "Survived"])
+    sns.heatmap(matrix, annot=True, fmt="d", xticklabels=["Survived", "Not Survived"], yticklabels=["Survived", "Not Survived"])
     plt.title("Confusion Matrix")
     plt.xlabel("Predicted Value")
     plt.ylabel("True Values")
